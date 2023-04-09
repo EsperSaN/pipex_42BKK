@@ -1,11 +1,23 @@
 NAME = pipex
 
-$(NAME) :
+SRC = pipex.c
+ 
+CC = gcc
 
-all :
+CFLAGS = -Wall -Werror -Wextra 
 
-clean : 
+OBJ = $(SRC:.c=.o)
 
-fclean :
+all : $(NAME)
 
-re :
+$(NAME) : $(OBJ)
+	 $(CC) $(SRC) -o $(NAME)
+clean :
+	rm -rf $(OBJ)
+
+fclean : clean
+	rm -rf $(NAME)
+	
+re : fclean $(NAME)
+
+.PHONY : clean fclean re all

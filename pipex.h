@@ -25,6 +25,7 @@
 // int pipe(int pipefd[2]); <<-- create pipe
 // pid_t fork(void); <<--create a child process
 // const char *pathname, char *const argv[],char *const envp[]; <<-- execute program
+// int execve(const char *pathname, char *const argv[], char *const envp[]);
 
 #include <fcntl.h>
 //for [open] 
@@ -52,5 +53,19 @@
 // pid_t wait(int *wstatus);
 // pid_t waitpid(pid_t pid, int *wstatus, int options);
 
+#include "util.c"
 
+typedef struct s_pipevar{
+	int int_fdin ;
+	int int_fdout ;
+
+	char* str_CmdPath_1 ;
+	char* str_CmdPath_2 ;
+
+	char** tstr_envpath ;
+
+}	t_var;
+
+char **ft_split(char const *s, char c);
+char *ft_strjoin(char const *s1, char const *s2);
 #endif
