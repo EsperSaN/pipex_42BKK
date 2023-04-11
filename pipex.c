@@ -1,90 +1,87 @@
 #include "./pipex.h"
-
-void getenvpath(char **ep, t_var *pipe_var)
+void printcheck(t_var pipe_var)
 {
-//	int i = 0;
-	while(*ep)
+	printf("\n---------------- checker -------------");
+	printf("\n fdin %d \n fdout %d\n CMDP 1 %s\n CMDP2 %s\n",pipe_var.int_fdin,pipe_var.int_fdout,pipe_var.str_CmdPath_1,pipe_var.str_CmdPath_2);
+	int i = 0;
+	printf("---------------- env -----------------\n");
+	while(pipe_var.tstr_envpath != NULL && pipe_var.tstr_envpath[i]  )
 	{
-		while(*ep)
-		{
-			if(str_n_compare(*ep, "PATH=", 5))
-			{
-				pipe_var->tstr_envpath = ft_split((*ep) + 5, ':');
-//				printf("en is at index %d is %s \n",i,*ep);
-			}
-//			i++;
-			ep++;
-		}
+		printf("%s\n",pipe_var.tstr_envpath[i]);
+		i++;
+	}
+	printf("--------------------------------------\n");
+	i = 0;
+	printf("---------------- CMD1 -----------------\n");
+	while(pipe_var.tstr_Command1[i])
+	{
+		printf("%s \n", pipe_var.tstr_Command1[i]);
+		i++;
+	}
+	printf("---------------- CMD2 -----------------\n");
+	i = 0;
+	while(pipe_var.tstr_Command2[i])
+	{
+		printf("%s \n", pipe_var.tstr_Command2[i]);
+		i++;
 	}
 }
 
-char	*get_CmdPath(char *command, t_var pipe_var)
+void free_2D(char **str)
 {
-	int	i;
-	char *prepath;
-	char *path_and_command;
-	i = 0;
-	while(pipe_var.tstr_envpath[i])
+	int i = 0;
+	while(str[i])
 	{
-		//prepath command acquire
-		prepath = ft_strjoin(pipe_var.tstr_envpath[i],"/");
-		path_and_command = ft_strjoin(pipe_var.tstr_envpath[i], command);
-		free(prepath);
-		printf("the pH is %s \n",path_and_command);
-		if(0 == access(path_and_command, X_OK))
-			return(path_and_command);
-		free(path_and_command);
+		free(str[i]);
 		i++;
 	}
-	return(0);
+	free(str);
+}
+
+void free_close_var_in_pipe_var(t_var *pipe_var)
+{
+	if(pipe_var->int_fdin > 2)
+		close(pipe_var->int_fdin);
+	if(pipe_var->int_fdout > 2)
+		close(pipe_var->int_fdout);
+	if(pipe_var->str_CmdPath_1)
+		free(pipe_var->str_CmdPath_1);
+	if(pipe_var->str_CmdPath_2)
+		free(pipe_var->str_CmdPath_2);
+	if(pipe_var->tstr_Command1)
+		free_2D(pipe_var->tstr_Command1);
+	if(pipe_var->tstr_Command2)
+		free_2D(pipe_var->tstr_Command2);
+	if(pipe_var->tstr_envpath)
+		free_2D(pipe_var->tstr_envpath);
 }
 
 int main(int ac, char** av, char **ep)
 {
 	t_var pipe_var;
+
 	if(ac != 5)
 	{
 		printf("not enought arg");
 		return (-1);
 	}
-	// check the FILE IN CAN HE OPEN IT!!!
-	int fd_inflie = open(av[1], O_RDONLY);//<< the av[1] is the input file and must be valid
-
-	printf("infile is %d\n", fd_inflie);
-
-	if (fd_inflie < 0)
-	{
+	pipe_var.int_fdin = open(av[1], O_RDONLY);//<< the av[1] is the input file and must be valid
+	if (pipe_var.int_fdin < 0)
 		printf("error with INflie\n");
-	}
-	//check the env path
-	getenvpath(ep,&pipe_var);
-
-	if(pipe_var.tstr_envpath == NULL)
-	{
+	pipe_var.tstr_envpath = NULL;
+	get_envpath(ep,&pipe_var.tstr_envpath);
+	if(!pipe_var.tstr_envpath)
 		printf("error with path\n");
-		return(1);
-	}
-	//debug path
-	printf("out of the getend\n");	
-	int i=0;
-	while(pipe_var.tstr_envpath[i])
-	{
-		printf("IN");
-		printf("env %d is %s \n", i,pipe_var.tstr_envpath[i]);
-		i++;
-	}
-	//end
+	split_the_command_and_assign(av, &pipe_var);
+	pipe_var.str_CmdPath_1 = get_CmdPath_slash(pipe_var.tstr_Command1[0],pipe_var.tstr_envpath);
+	if(pipe_var.str_CmdPath_1 == NULL)
+		printf("promblem with %s command\n",av[2]);
+	pipe_var.str_CmdPath_2 = get_CmdPath_slash(pipe_var.tstr_Command2[0],pipe_var.tstr_envpath);
+	if(pipe_var.str_CmdPath_2 == NULL)
+		printf("promblem with %s command\n",av[3]);
+	
+	pipe_var.int_fdout = open(av[4], O_RDWR|O_CREAT, 0666);
+	printcheck(pipe_var);
 
-	//check the command on av[2] and av [3]
-	pipe_var.str_CmdPath_1 = get_CmdPath(av[2],pipe_var);
-//	if(access(av[3],X_OK) == -1)
-
-	//check the output file
-	int fd_outfile = open(av[4], O_RDWR|O_CREAT, 0666);
-
-	if(fd_outfile < 0)
-	{
-		printf("error with outfile fd\n");
-	}
-	free(pipe_var.str_CmdPath_1);	
-}
+	free_close_var_in_pipe_var(&pipe_var);
+}	

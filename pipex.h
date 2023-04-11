@@ -1,5 +1,5 @@
 #ifndef PIPEX_H
-#define PIPEX_H
+# define PIPEX_H
 
 #include <unistd.h>
 // for the [write, read, close , access, dup ,dup2] 
@@ -53,19 +53,33 @@
 // pid_t wait(int *wstatus);
 // pid_t waitpid(pid_t pid, int *wstatus, int options);
 
-#include "util.c"
-
 typedef struct s_pipevar{
-	int int_fdin ;
+	int	int_fdin ;
 	int int_fdout ;
 
-	char* str_CmdPath_1 ;
-	char* str_CmdPath_2 ;
+	char	**tstr_envpath ;
 
-	char** tstr_envpath ;
+	char	*str_CmdPath_1 ;
+	char	*str_CmdPath_2 ;
+
+	char	**tstr_Command1 ;
+	char	**tstr_Command2 ;
 
 }	t_var;
 
-char **ft_split(char const *s, char c);
-char *ft_strjoin(char const *s1, char const *s2);
+
+
+
+
+
+size_t	ft_strlen(const char *s);
+int		str_n_compare(const char *s1, const char *s2, size_t n);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+size_t	how_long(char const *s, char c);
+size_t	count_on_me(char const *s, char c);
+char	**ft_split(char const *s, char c);
+char	*ft_strjoin(char const *s1, char const *s2);
+void get_envpath(char **ep, char ***envbox);
+char	*get_CmdPath_slash(char *command, char** env);
+void 	split_the_command_and_assign(char **av, t_var *pipe_var);
 #endif
