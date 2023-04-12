@@ -65,23 +65,30 @@ int main(int ac, char** av, char **ep)
 		printf("not enought arg");
 		return (-1);
 	}
+	struct_init(&pipe_var);
 	pipe_var.int_fdin = open(av[1], O_RDONLY);//<< the av[1] is the input file and must be valid
 	if (pipe_var.int_fdin < 0)
-		printf("error with INflie\n");
-	pipe_var.tstr_envpath = NULL;
+		exit_due_error("Error when open the input file", 0, &pipe_var);
 	get_envpath(ep,&pipe_var.tstr_envpath);
 	if(!pipe_var.tstr_envpath)
-		printf("error with path\n");
+		exit_due_error("Cannot get the environment path", 0, &pipe_var);
 	split_the_command_and_assign(av, &pipe_var);
 	pipe_var.str_CmdPath_1 = get_CmdPath_slash(pipe_var.tstr_Command1[0],pipe_var.tstr_envpath);
 	if(pipe_var.str_CmdPath_1 == NULL)
-		printf("promblem with %s command\n",av[2]);
+		exit_due_error("the first command is not found or not excutable", 0, &pipe_var);
 	pipe_var.str_CmdPath_2 = get_CmdPath_slash(pipe_var.tstr_Command2[0],pipe_var.tstr_envpath);
 	if(pipe_var.str_CmdPath_2 == NULL)
-		printf("promblem with %s command\n",av[3]);
-	
-	pipe_var.int_fdout = open(av[4], O_RDWR|O_CREAT, 0666);
+		exit_due_error("the second command is not found or not excutable", 0, &pipe_var);
+	pipe_var.int_fdout = open(av[4], O_RDWR|O_CREAT, 0777);
+		
 	printcheck(pipe_var);
 
+	int id = fork();
+	e
+	if(id == 0)
+		execve(pipe_var.str_CmdPath_1,pipe_var.tstr_Command1,ep);
+	else
+		execve(pipe_var.str_CmdPath_2,pipe_var.tstr_Command2,ep);
+	
 	free_close_var_in_pipe_var(&pipe_var);
 }	
