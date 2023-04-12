@@ -5,13 +5,30 @@ void split_the_command_and_assign(char **av, t_var *pipe_var)
     pipe_var->tstr_Command2 = ft_split(av[3], ' ');
 }
 
+void exit_due_error(char *str, int errornum, t_var *var)
+{
+	free_close_var_in_pipe_var(var);
+	printf("%s",str);
+	exit(errornum);
+}
+
+void struct_init(t_var *var)
+{
+	var->int_fdin = 0;
+	var->int_fdout = 0;
+	var->tstr_Command1 = NULL;
+	var->tstr_Command2 = NULL;
+	var->tstr_envpath = NULL;
+	var->str_CmdPath_1 = NULL;
+	var->str_CmdPath_2 = NULL;
+}
+
 void get_envpath(char **ep, char ***envbox)
 {
 	while(*ep)
 	{
 		if(str_n_compare(*ep, "PATH=", 5))
 			*envbox = ft_split((*ep) + 5, ':');
-		printf("current env var is %s\n",*ep);
 		ep++;
 	}
 }
@@ -26,7 +43,6 @@ char	*get_CmdPath_slash(char *command, char **env)
 	if(0 == access(command, X_OK) || env == NULL)
 	{
 		ready_cmd = ft_substr(command,0,ft_strlen(command));
-		printf("str in CMDPATH is %s\n",ready_cmd);
 		return(ready_cmd);
 	}
 	while(env[i])

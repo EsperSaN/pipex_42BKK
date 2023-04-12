@@ -54,8 +54,10 @@
 // pid_t waitpid(pid_t pid, int *wstatus, int options);
 
 typedef struct s_pipevar{
-	int	int_fdin ;
-	int int_fdout ;
+	int		int_fdin ;
+	int 	int_fdout ;
+
+	int 	pipe_readwrite[2];
 
 	char	**tstr_envpath ;
 
@@ -82,4 +84,7 @@ char	*ft_strjoin(char const *s1, char const *s2);
 void get_envpath(char **ep, char ***envbox);
 char	*get_CmdPath_slash(char *command, char** env);
 void 	split_the_command_and_assign(char **av, t_var *pipe_var);
+void struct_init(t_var *var);
+void exit_due_error(char *str, int errornum, t_var *var);
+void free_close_var_in_pipe_var(t_var *pipe_var);
 #endif
