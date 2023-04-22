@@ -5,13 +5,6 @@ void split_the_command_and_assign(char **av, t_var *pipe_var)
     pipe_var->tstr_Command2 = ft_split(av[3], ' ');
 }
 
-void exit_due_error(char *str, int errornum, t_var *var)
-{
-	free_close_var_in_pipe_var(var);
-	printf("%s",str);
-	exit(errornum);
-}
-
 void struct_init(t_var *var)
 {
 	var->int_fdin = 0;

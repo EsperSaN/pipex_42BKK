@@ -1,6 +1,6 @@
 NAME = pipex
 
-SRC = pipex.c
+SRC = debug.c error.c free.c tool.c util.c process.c pipex.c
  
 CC = gcc
 
@@ -11,7 +11,7 @@ OBJ = $(SRC:.c=.o)
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	 $(CC) $(SRC) -o $(NAME)
+	 $(CC) $(OBJ) -o $(NAME)
 clean :
 	rm -rf $(OBJ)
 
