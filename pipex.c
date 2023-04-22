@@ -70,8 +70,7 @@ int main(int ac, char** av, char **ep)
 	if (pipe_var.int_fdin < 0)
 		exit_due_error("Error when open the input file", 0, &pipe_var);
 	get_envpath(ep,&pipe_var.tstr_envpath);
-	if(!pipe_var.tstr_envpath)
-		exit_due_error("Cannot get the environment path", 0, &pipe_var);
+	//  <---- if no path should run any ways
 	split_the_command_and_assign(av, &pipe_var);
 	pipe_var.str_CmdPath_1 = get_CmdPath_slash(pipe_var.tstr_Command1[0],pipe_var.tstr_envpath);
 	if(pipe_var.str_CmdPath_1 == NULL)
@@ -80,15 +79,29 @@ int main(int ac, char** av, char **ep)
 	if(pipe_var.str_CmdPath_2 == NULL)
 		exit_due_error("the second command is not found or not excutable", 0, &pipe_var);
 	pipe_var.int_fdout = open(av[4], O_RDWR|O_CREAT, 0777);
+	if(pipe_var.int_fdout == -1)
+		exit_due_error("Error when open the output or create output", 0, &pipe_var);
 		
 	printcheck(pipe_var);
-
+	pipe(pipe_var.pipe);
 	int id = fork();
-	e
 	if(id == 0)
+	{
+		dup2(pipe_var.pipe[1], 1);
+		dup2(pipe_var.int_fdin, 0);
+		close(pipe_var.pipe[0]);
 		execve(pipe_var.str_CmdPath_1,pipe_var.tstr_Command1,ep);
+		printf("error exe1");
+	}
 	else
+	{
+		wait(NULL);
+		dup2(pipe_var.pipe[0], 0);
+		close(pipe_var.pipe[1]);
+		dup2(pipe_var.int_fdout, 1);
 		execve(pipe_var.str_CmdPath_2,pipe_var.tstr_Command2,ep);
+		printf("error exe2");
+	}
 	
 	free_close_var_in_pipe_var(&pipe_var);
 }	

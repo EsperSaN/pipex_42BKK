@@ -56,6 +56,7 @@
 typedef struct s_pipevar{
 	int		int_fdin ;
 	int 	int_fdout ;
+	int		pipe[2];
 
 	int 	pipe_readwrite[2];
 
