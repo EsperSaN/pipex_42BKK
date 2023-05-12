@@ -259,41 +259,34 @@ int main(int ac ,char **av , char **ev)
 	open_file_inout(&var, av[1], av[ac-1]);
 	split_env_path(&var.env, ev); //check $PATH and split them into var.env if no path NULL
 	
-	if(-1 == pipe(var.pipo))
-		error_exit("pipe error");
-	dup2(var.fd_in, 0);
 
-	int pidm = fork();
-	
-	if (pidm == 0)
+	dup2(var.fd_in, 0);
+	int	mpid = fork();
+
+	if(ac > 4 && mpid == 0)
 	{
-		while(i < ac-4) //should start with ac[2] and end with av[ac - 2]
+		if(-1 == pipe(var.pipo))
+			error_exit("pope not found");
+		pid = fork();
+		if(pid == -1)
+			error_exit("only spoon");
+		if(pid == 0)
 		{
-			dprintf(2,"\n <<<<<<< IN PIPE LOOP [%d] >>>>>> \n", i);
-			int pid = fork();
-			if(pid == -1)
-				error_exit("error when trying to fork");
-			if(pid == 0)
-			{
-				write(2,"HELP",4);
-				dup2(var.pipo[1], 1);
-				run_command(av[i + 2], var.env, ev);
-				dprintf(2,"\n command %s susssss \n",av[i+2]);
-			}
-			dprintf(2,"\n <<<<<<< On exit >>>>>> \n ");
+			dup2(var.pipo[1], 1);
+			run_command();
+		}
+		if(pid > 0)
+		{
+			wait(NULL);
 			dup2(var.pipo[0], 0);
-			exit(1);
-			
-			i++;
+			exit();
 		}
 	}
-	if(pidm)
-		wait(NULL);
-	if(pidm)
+
+	if(mpid > 0)
 	{
-		dup2(var.fd_out , 1);
-		dprintf(2,">>>>>>>>>> outta LOOP <<<<<<\n");
-		run_command(av[ac-2] ,var.env, ev);
+		wait(NULL);
+		dup2(1, var.fd_out);
+		runcommand(var.env_box);
 	}
 }
-	
