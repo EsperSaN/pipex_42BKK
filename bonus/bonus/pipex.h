@@ -13,6 +13,8 @@ void	put_run_error(char *cmd ,int errnum);
 void	putstr_fd(char *str, int fd);
 char    **get_envpath(char **ep);
 char	*get_cmdPath(char *command, char **env);
+void    put_error(char *str ,int errornum);
+void    put_errorcmd(char *str ,int errornum);
 
 size_t	ft_strlen(const char *s);
 int	str_n_compare(const char *s1, const char *s2, size_t n);
