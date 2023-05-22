@@ -21,7 +21,6 @@ char	*get_cmdPath(char *command, char **env)
 	if(0 == access(command, X_OK) || env == NULL)
 	{
 		ready_cmd = ft_substr(command,0,ft_strlen(command));
-		dprintf(2,"\n%s, is accessable", ready_cmd);
 		return(ready_cmd);
 	}
 	while(env[i])
@@ -31,7 +30,6 @@ char	*get_cmdPath(char *command, char **env)
 		free(prepath);
 		if(0 == access(path_and_command, X_OK))
 		{
-			dprintf(2, "the command is [%s]\n", path_and_command);
 			return(path_and_command);
 		}
 		free(path_and_command);

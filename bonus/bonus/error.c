@@ -13,8 +13,8 @@ void    put_error(char *str ,int errornum)
 {
     dprintf(2 ,"[%s] ", str);
     perror("Error: ");
-    //exit(errornum);
-    (void)errornum;
+    exit(errornum);
+    //(void)errornum;
 }
 void    put_errorcmd(char *str ,int errornum)
 {
@@ -23,6 +23,6 @@ void    put_errorcmd(char *str ,int errornum)
         dprintf(2 ,"no such file or directory");
     else
         dprintf(2, "command not found");
-    dprintf(2 ,": %s", str);
+    dprintf(2 ,": %s\n", str);
     exit(errornum);
 }
